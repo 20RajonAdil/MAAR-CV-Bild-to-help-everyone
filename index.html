@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="MAAR CV — Premium CV Builder. Create a professional UK CV in minutes with live preview, intelligent templates and instant export." />
+  <meta name="theme-color" content="#4f46e5" />
+  <title>MAAR CV — Premium CV Builder</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Libraries for export -->
+  <script src="js/lib/html2canvas.min.js" defer></script>
+  <script src="js/lib/jspdf.umd.min.js" defer></script>
+</head>
+<body>
+  <!-- Toast notifications -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- App Shell -->
+  <div id="app" class="app">
+    <!-- Top Navigation -->
+    <header class="topbar" role="banner">
+      <div class="topbar-left">
+        <a href="/" class="brand" aria-label="MAAR CV Home">
+          <svg class="brand-logo" width="128" height="32" viewBox="0 0 130 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366F1"/>
+                <stop offset="100%" style="stop-color:#A855F7"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="6" width="28" height="28" rx="7" fill="url(#logoGrad)"/>
+            <path d="M9 20 L16 13 L23 20 L16 27 Z" fill="white" opacity="0.95"/>
+            <circle cx="16" cy="20" r="3.5" fill="white" opacity="0.3"/>
+            <text x="38" y="27" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="-0.6" fill="currentColor">MAAR CV</text>
+          </svg>
+        </a>
+        <span class="brand-badge">Beta</span>
+      </div>
+
+      <div class="topbar-center">
+        <div class="action-group">
+          <button type="button" class="btn btn-ghost btn-icon" id="btn-undo" title="Undo (Ctrl+Z)" aria-label="Undo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          </button>
+          <button type="button" class="btn btn-ghost btn-icon" id="btn-redo" title="Redo (Ctrl+Y)" aria-label="Redo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+          </button>
+          <div class="divider-v"></div>
+          <button type="button" class="btn btn-ghost btn-icon" id="btn-reset" title="Reset all fields" aria-label="Reset">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-print" title="Print Mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span>Print</span>
+        </button>
+        <div class="export-dropdown">
+          <button type="button" class="btn btn-primary btn-sm" id="btn-export" aria-haspopup="true" aria-expanded="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Export</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="dropdown-menu" id="export-menu" role="menu">
+            <button type="button" class="dropdown-item" id="export-pdf" role="menuitem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Download PDF
+            </button>
+            <button type="button" class="dropdown-item" id="export-docx" role="menuitem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+              Download Word (.docx)
+            </button>
+          </div>
+        </div>
+        <button type="button" class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+          <span class="theme-icon sun">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span class="theme-icon moon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Split Layout -->
+    <main class="main" role="main">
+      <!-- LEFT: Builder Panel -->
+      <aside class="builder-panel" id="builder-panel" aria-label="CV Builder Form">
+        <div class="builder-scroll">
+          <!-- Personal Details -->
+          <section class="form-section" data-section="personal">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <h2>Personal Details</h2>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="e.g. MD Adil Ahmed Rajon" autocomplete="name" data-field="fullName" />
+              </div>
+              <div class="field">
+                <label for="phone">Telephone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="e.g. 07440445929" autocomplete="tel" data-field="phone" />
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="e.g. rajonadil@gmail.com" autocomplete="email" data-field="email" />
+              </div>
+              <div class="field">
+                <label for="address">City / Address</label>
+                <input type="text" id="address" name="address" placeholder="e.g. Birmingham" autocomplete="address-level2" data-field="address" />
+              </div>
+              <div class="field">
+                <label for="postcode">Postcode</label>
+                <input type="text" id="postcode" name="postcode" placeholder="e.g. B19 1LH" autocomplete="postal-code" data-field="postcode" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Personal Statement (Guided) -->
+          <section class="form-section" data-section="statement">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <h2>Personal Profile</h2>
+              <span class="section-hint">Guided sentence templates</span>
+            </div>
+            <div class="guided-block">
+              <p class="guided-text">
+                I am currently studying
+                <input type="text" class="inline-input" id="studying" placeholder="e.g. Business Level 2" data-field="studying" />
+                and I would like to find the chance to get some work experience. I am a reliable, hard-working and motivated person who likes to learn and to be a member of a team. I have developed such skills as
+                <input type="text" class="inline-input" id="skillsDeveloped" placeholder="e.g. communication, teamwork and organisation" data-field="skillsDeveloped" />
+                during my education and daily activities. I want to
+                <input type="text" class="inline-input" id="careerGoal" placeholder="e.g. become a Website Developer" data-field="careerGoal" />
+                in the future. I am ready to study further, to be a part of the team and to make a successful career.
+              </p>
+            </div>
+          </section>
+
+          <!-- Education - School -->
+          <section class="form-section" data-section="school">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <h2>School</h2>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="schoolName">School Name</label>
+                <input type="text" id="schoolName" placeholder="e.g. Fortis Academy" data-field="schoolName" />
+              </div>
+              <div class="field">
+                <label for="schoolFrom">From</label>
+                <input type="text" id="schoolFrom" placeholder="e.g. Sept 2018" data-field="schoolFrom" />
+              </div>
+              <div class="field">
+                <label for="schoolTo">To</label>
+                <input type="text" id="schoolTo" placeholder="e.g. July 2023" data-field="schoolTo" />
+              </div>
+            </div>
+          </section>
+
+          <!-- GCSE Grades (Dynamic) -->
+          <section class="form-section" data-section="gcse">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <h2>GCSE Results</h2>
+              <button type="button" class="btn btn-ghost btn-xs" id="add-gcse" title="Add subject">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+              </button>
+            </div>
+            <div class="gcse-list" id="gcse-list">
+              <!-- Dynamic rows inserted by JS -->
+            </div>
+          </section>
+
+          <!-- College -->
+          <section class="form-section" data-section="college">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <h2>College</h2>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="collegeName">College Name</label>
+                <input type="text" id="collegeName" placeholder="e.g. Matthew Boulton College" data-field="collegeName" />
+              </div>
+              <div class="field full">
+                <label for="collegeCourse">Course of Study</label>
+                <input type="text" id="collegeCourse" placeholder="e.g. Business Level 2" data-field="collegeCourse" />
+              </div>
+              <div class="field">
+                <label for="collegeFrom">From</label>
+                <input type="text" id="collegeFrom" placeholder="e.g. Sept 2023" data-field="collegeFrom" />
+              </div>
+              <div class="field">
+                <label for="collegeTo">To</label>
+                <input type="text" id="collegeTo" placeholder="e.g. Present" data-field="collegeTo" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Current Education (Guided) -->
+          <section class="form-section" data-section="current">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <h2>Current Studies</h2>
+            </div>
+            <div class="guided-block">
+              <p class="guided-text">
+                I am currently studying
+                <input type="text" class="inline-input" id="currentCourse" placeholder="e.g. Business Level 2" data-field="currentCourse" />.
+                During this course, I am gaining knowledge and practical skills in
+                <input type="text" class="inline-input" id="currentSkills" placeholder="e.g. marketing, finance and customer service" data-field="currentSkills" />,
+                which include
+                <input type="text" class="inline-input" id="currentInclude" placeholder="e.g. presentations, team projects and digital tools" data-field="currentInclude" />.
+              </p>
+            </div>
+          </section>
+
+          <!-- Skills -->
+          <section class="form-section" data-section="skills">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <h2>Skills</h2>
+              <button type="button" class="btn btn-ghost btn-xs" id="add-skill" title="Add skill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+              </button>
+            </div>
+            <div class="skills-list" id="skills-list">
+              <!-- Dynamic skill chips/inputs -->
+            </div>
+          </section>
+
+          <!-- Work Experience (Optional) -->
+          <section class="form-section optional-section" data-section="experience">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <h2>Work Experience</h2>
+              <span class="optional-badge">Optional</span>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="jobTitle">Job Title</label>
+                <input type="text" id="jobTitle" placeholder="e.g. Retail Assistant" data-field="jobTitle" />
+              </div>
+              <div class="field">
+                <label for="company">Company</label>
+                <input type="text" id="company" placeholder="e.g. Tesco" data-field="company" />
+              </div>
+              <div class="field full">
+                <label for="jobDate">Dates</label>
+                <input type="text" id="jobDate" placeholder="e.g. June 2024 – Present" data-field="jobDate" />
+              </div>
+              <div class="field full">
+                <label for="jobDuties">Duties (one per line)</label>
+                <textarea id="jobDuties" rows="3" placeholder="Served customers&#10;Handled cash transactions&#10;Maintained stock levels" data-field="jobDuties"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- Volunteering (Optional) -->
+          <section class="form-section optional-section" data-section="volunteering">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <h2>Volunteering</h2>
+              <span class="optional-badge">Optional</span>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="volOrg">Organisation</label>
+                <input type="text" id="volOrg" placeholder="e.g. Local Food Bank" data-field="volOrg" />
+              </div>
+              <div class="field">
+                <label for="volPosition">Position</label>
+                <input type="text" id="volPosition" placeholder="e.g. Volunteer Helper" data-field="volPosition" />
+              </div>
+              <div class="field full">
+                <label for="volDuties">Duties (one per line)</label>
+                <textarea id="volDuties" rows="3" placeholder="Sorted donations&#10;Assisted visitors&#10;Organised events" data-field="volDuties"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- Achievements & Certifications (Optional) -->
+          <section class="form-section optional-section" data-section="achievements">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              </div>
+              <h2>Achievements &amp; Certifications</h2>
+              <span class="optional-badge">Optional</span>
+              <button type="button" class="btn btn-ghost btn-xs" id="add-achievement" title="Add item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+              </button>
+            </div>
+            <div class="achievements-list" id="achievements-list">
+              <!-- Dynamic -->
+            </div>
+          </section>
+
+          <div class="builder-footer">
+            <p class="auto-save-status" id="save-status">All changes saved locally</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: Live Preview -->
+      <section class="preview-panel" aria-label="Live CV Preview">
+        <div class="preview-toolbar">
+          <span class="preview-label">Live Preview</span>
+          <div class="preview-actions">
+            <button type="button" class="btn btn-ghost btn-xs" id="zoom-out" title="Zoom out">−</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button type="button" class="btn btn-ghost btn-xs" id="zoom-in" title="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="preview-viewport" id="preview-viewport">
+          <div class="a4-page" id="cv-preview" aria-live="polite">
+            <!-- Live CV content rendered here -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading overlay for export -->
+  <div id="export-overlay" class="export-overlay hidden" aria-hidden="true">
+    <div class="export-spinner">
+      <div class="spinner"></div>
+      <p>Generating your professional CV…</p>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/export.js"></script>
+</body>
+</html>
