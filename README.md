@@ -1,4 +1,4 @@
-# VitaForge — Premium CV Builder
+# MAAR CV — Premium CV Builder
 
 A world-class, modern SaaS-style CV builder inspired by Linear, Stripe, Notion, Vercel and Framer.
 
@@ -34,7 +34,7 @@ Then visit http://localhost:8080
 
 ## Brand
 
-**VitaForge** — Craft your professional story.
+**MAAR CV** — Craft your professional story.
 
 Original logo and favicon included in `/assets`.
 
